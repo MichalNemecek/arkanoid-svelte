@@ -4,11 +4,8 @@ Pro spuštění projektu je zapotřebí Node.js a NPM:
 
 ``` sh
 git clone https://github.com/MichalNemecek/arkanoid-svelte
-
 cd arkanoid-svelte
-
 npm install
-
 npm run dev
 ```
 
