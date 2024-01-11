@@ -13,12 +13,12 @@ Dokud nebude projekt hotový, není žádná release verze.
 
 ## Co funguje?
 
-Kuličky se pohybují a odrážejí od stěn
+Kuličky se pohybují a odrážejí od stěn hrací plochy a od vodorovných stěn cihel
 
 ## TODO
 
 - vytvořit cihly
 - vytvořit pálku
 - vytvořit powerupy
-- naprogramovat ~90% chování
-- vymyslet způsob, jak určit kterou stranu cihly kulička trefila
+- naprogramovat ~70% chování
+- zjistit proč se kuličky neodrážejí od bočních stěn cihel
