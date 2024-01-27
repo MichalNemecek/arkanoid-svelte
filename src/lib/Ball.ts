@@ -19,6 +19,9 @@ export default class Ball {
 			// not going to collide at all, can skip
 			return false;
 		}
+		if(!brick.active){
+			return false;
+		}
 		// top side - TODO
 		if(this.speed.y > 0){
 			// is moving down
@@ -29,7 +32,7 @@ export default class Ball {
 
 				// calculate contact point
 				let tx = (this.speed.x/this.speed.y)*(ty-this.pos.y) + this.pos.x;
-				if(brick.pos.x < tx && tx < brick.pos.x + brick.size.x){
+				if(brick.pos.x < tx && tx <= brick.pos.x + brick.size.x){
 					// ball will bounce off top side
 
 					// move ball to contact point
@@ -39,7 +42,6 @@ export default class Ball {
 					this.speed.y *= -1;
 
 					//deactivate brick
-					brick.active = false;
 					return true;
 
 				}
@@ -56,7 +58,7 @@ export default class Ball {
 
 				// calculate contact point
 				let tx = (this.speed.x/this.speed.y)*(ty-this.pos.y)+this.pos.x;
-				if(brick.pos.x < tx && tx < brick.pos.x + brick.size.x){
+				if(brick.pos.x < tx && tx <= brick.pos.x + brick.size.x){
 					//ball will bounce off bottom side
 
 					// move ball to contact point
@@ -66,7 +68,6 @@ export default class Ball {
 					this.speed.y *= -1;
 
 					//deactivate brick
-					brick.active = false;
 					return true;
 
 				}
@@ -76,13 +77,13 @@ export default class Ball {
 		if(this.speed.x < 0){
 			// is moving left
 			// X coord of contact point
-			let tx = brick.pos.y + brick.size.y;
+			let tx = brick.pos.x + brick.size.x;
 			if(this.pos.x > tx && tx >= (this.pos.x + this.speed.x)){
 				// will cross line tangent to left side
 
 				// calculate contact point
 				let ty = (this.speed.y/this.speed.x)*(tx-this.pos.x)+this.pos.y;
-				if(brick.pos.y < ty && ty < brick.pos.y + brick.size.y){
+				if(brick.pos.y < ty && ty <= brick.pos.y + brick.size.y){
 					//ball will bounce off bottom side
 
 					// move ball to contact point
@@ -92,7 +93,6 @@ export default class Ball {
 					this.speed.x *= -1;
 
 					//deactivate brick
-					brick.active = false;
 					return true;
 
 				}
@@ -102,13 +102,13 @@ export default class Ball {
 		if(this.speed.x > 0){
 			// is moving right
 			// X coord of contact point
-			let tx = brick.pos.y;
+			let tx = brick.pos.x;
 			if(this.pos.x < tx && tx <= (this.pos.x + this.speed.x)){
 				// will cross line tangent to right side
 
 				// calculate contact point
 				let ty = (this.speed.y/this.speed.x)*(tx-this.pos.x)+this.pos.y;
-				if(brick.pos.y < ty && ty < brick.pos.y + brick.size.y){
+				if(brick.pos.y < ty && ty <= brick.pos.y + brick.size.y){
 					//ball will bounce off right side
 
 					// move ball to contact point
@@ -118,7 +118,6 @@ export default class Ball {
 					this.speed.x *= -1;
 
 					//deactivate brick
-					brick.active = false;
 					return true;
 				}
 			}
