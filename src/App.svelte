@@ -45,7 +45,6 @@
   }, 1000/timeStep);
                   
 </script>
-
 <svg width={areaSize.x} height={areaSize.y}>
   {#each bricks as brick}
     <BrickElement props={brick} />
@@ -54,8 +53,10 @@
     <BallElement props={ball} />
   {/each}
 </svg>
-<style>
+<style lang="css">
   svg {
-    border: 5px solid black;
+		  border: 5px solid black;
+		  margin: 0 auto;
+		  display: block;
   }
 </style>
