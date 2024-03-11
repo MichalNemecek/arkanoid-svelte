@@ -124,6 +124,7 @@ export default class Ball {
 	}
 	handlePaddleCollision(paddle: Paddle){
 		if(this.pos.y < paddle.pos.y){return;}
+		if(this.speed.y < 0){return;}
 		if(this.pos.x < paddle.pos.x || this.pos.x > paddle.pos.x + paddle.width){return;}
 		this.pos.y = paddle.pos.y-1;
 		let offsetOnPaddle = ((this.pos.x - paddle.pos.x)/paddle.width)-0.5;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Sound } from "svelte-sound";
 	import Confs from "./lib/Confs.ts";
 	import Vec2 from "./lib/Vec2.ts";
 	import Ball from "./lib/Ball.ts";
@@ -7,11 +8,12 @@
 	import BallElement from "./lib/BallElement.svelte";
 	import BrickElement from "./lib/BrickElement.svelte";
 	import PaddleElement from "./lib/PaddleElement.svelte";
+	import arkanoidstart from "./assets/arkanoidstart.wav";
 
 	let gameState: number = 1;
 	// 0 = intro;
 	// 1 = playing;
-
+	let lifeCount: number = 3;
 	let balls: Ball[] = [];
 	let bricks: Brick[] = [];
 	let paddle: Paddle = new Paddle();
@@ -21,6 +23,7 @@
 	let pressedKeys = 0x00;
 
 	let gameLoopInterval: number;
+	let startSound = new Sound(arkanoidstart);
 
 	let handlePressed = (e: KeyboardEvent) => {
 		switch (e.key) {
@@ -45,12 +48,26 @@
 		bricks.push(new Brick(new Vec2(i, 4), true));
 		bricks.push(new Brick(new Vec2(i, 5), true));
 	}
-	balls.push(
-		new Ball(
-			new Vec2(Confs.gameWidth / 2, Confs.gameHeight - 50),
-			new Vec2(3, -4),
-		),
-	);
+
+	let gameStart = () => {
+		startSound.play();
+		setTimeout(() => {
+			balls.push(
+				new Ball(
+					new Vec2(
+						paddle.pos.x + paddle.width / 2,
+						Confs.gameHeight - paddle.height - 5,
+					),
+					new Vec2(3, -4),
+				),
+			);
+			gameLoopInterval = setInterval(
+				gameLoopFunction,
+				1000 / Confs.gameSpeed,
+			);
+		}, 4500);
+	};
+
 	let gameLoopFunction = () => {
 		let ballCollidedWithBrick = false;
 		for (let ball of balls) {
@@ -88,9 +105,14 @@
 		paddle = paddle;
 		if (!ballsLeft) {
 			clearInterval(gameLoopInterval);
+			if (bricksLeft) {
+				lifeCount--;
+				if (lifeCount > 0) {
+				setTimeout(gameStart, 1000);
+				}
+			}
 		}
 	};
-	gameLoopInterval = setInterval(gameLoopFunction, 1000 / Confs.gameSpeed);
 </script>
 
 <svg width={Confs.gameWidth} height={Confs.gameHeight}>
@@ -103,17 +125,18 @@
 		{/each}
 		<PaddleElement props={paddle} />
 		{#if !bricksLeft}
-			<text text-anchor="middle" x="300" y="300" class="text-3xl"
-				>You win</text
+			<text text-anchor="middle" x={Confs.gameWidth/2} y={Confs.gameHeight/2} class="text-3xl"
+				>You win!</text
 			>
 		{/if}
-		{#if !ballsLeft && bricksLeft}
-			<text text-anchor="middle" x="300" y="300" class="text-3xl"
+		{#if !ballsLeft && bricksLeft && lifeCount == 0}
+			<text text-anchor="middle" x={Confs.gameWidth/2} y={Confs.gameHeight/2} class="text-3xl"
 				>Game over!</text
 			>
 		{/if}
 	{/if}
 </svg>
+<button on:click={gameStart}>Start game</button>
 <svelte:window on:keydown={handlePressed} on:keyup={handleReleased} />
 
 <style lang="css">
