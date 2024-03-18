@@ -10,7 +10,7 @@
 	import PaddleElement from "./lib/PaddleElement.svelte";
 	import arkanoidstart from "./assets/arkanoidstart.wav";
 
-	let gameState: number = 1;
+	let gameState: number = 0;
 	// 0 = intro;
 	// 1 = playing;
 	let lifeCount: number = 3;
@@ -49,7 +49,7 @@
 		bricks.push(new Brick(new Vec2(i, 5), true));
 	}
 
-	let gameStart = () => {
+	let gameRespawn = () => {
 		startSound.play();
 		setTimeout(() => {
 			balls.push(
@@ -67,6 +67,11 @@
 			);
 		}, 4500);
 	};
+	let gameStart = () => {
+		gameState = 1;
+		lifeCount = 3;
+		gameRespawn();
+	}
 
 	let gameLoopFunction = () => {
 		let ballCollidedWithBrick = false;
@@ -108,13 +113,17 @@
 			if (bricksLeft) {
 				lifeCount--;
 				if (lifeCount > 0) {
-				setTimeout(gameStart, 1000);
+				setTimeout(gameRespawn, 1000);
 				}
 			}
 		}
 	};
 </script>
-
+{#if gameState == 0}
+	<div class="intro" style="width:{Confs.gameWidth}px; height:{Confs.gameHeight}px;">
+	<div class="button" on:click={gameStart}>Start game</div>
+</div>
+{:else if gameState == 1}
 <svg width={Confs.gameWidth} height={Confs.gameHeight}>
 	{#if gameState == 1}
 		{#each bricks as brick}
@@ -125,18 +134,16 @@
 		{/each}
 		<PaddleElement props={paddle} />
 		{#if !bricksLeft}
-			<text text-anchor="middle" x={Confs.gameWidth/2} y={Confs.gameHeight/2} class="text-3xl"
-				>You win!</text
+			<text class="success" text-anchor="middle" x={Confs.gameWidth/2} y={Confs.gameHeight/2}>You win!</text
 			>
 		{/if}
 		{#if !ballsLeft && bricksLeft && lifeCount == 0}
-			<text text-anchor="middle" x={Confs.gameWidth/2} y={Confs.gameHeight/2} class="text-3xl"
-				>Game over!</text
+			<text class="failure" text-anchor="middle" x={Confs.gameWidth/2} y={Confs.gameHeight/2}>Game over!</text
 			>
 		{/if}
 	{/if}
 </svg>
-<button on:click={gameStart}>Start game</button>
+{/if}
 <svelte:window on:keydown={handlePressed} on:keyup={handleReleased} />
 
 <style lang="css">
@@ -145,9 +152,31 @@
 		margin: 0 auto;
 		display: block;
 	}
-	text {
+	text.success, text.failure {
 		fill: black;
 		font-size: 4em;
+		font-family: monospace;
+	}
+	div.intro {
+		border: 5px solid black;
+		margin: 0 auto;
+		display: flex;
+		flex-direction:column;
+		justify-content:center;
+		align-content: space-evenly;
+
+	}
+	.button {
+		width: 30%;
+		background-color: #a86;
+		height: 2em;
+		text-align: center;
+		color: white;
+		vertical-align: middle;
+		line-height: 2em;
+		border-radius: 0.5em;
+		align-self: center;
+		font-size: 1.5em;
 		font-family: monospace;
 	}
 </style>
