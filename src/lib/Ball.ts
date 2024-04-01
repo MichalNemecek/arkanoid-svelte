@@ -122,10 +122,10 @@ export default class Ball {
 		}
 		return false;
 	}
-	handlePaddleCollision(paddle: Paddle){
-		if(this.pos.y < paddle.pos.y){return;}
-		if(this.speed.y < 0){return;}
-		if(this.pos.x < paddle.pos.x || this.pos.x > paddle.pos.x + paddle.width){return;}
+	handlePaddleCollision(paddle: Paddle): boolean{
+		if(this.pos.y < paddle.pos.y){return false;}
+		if(this.speed.y < 0){return false;}
+		if(this.pos.x < paddle.pos.x || this.pos.x > paddle.pos.x + paddle.width){return false;}
 		this.pos.y = paddle.pos.y-1;
 		let offsetOnPaddle = ((this.pos.x - paddle.pos.x)/paddle.width)-0.5;
 		let oldBallAngle = Math.atan2(this.speed.y, this.speed.x);
@@ -134,5 +134,6 @@ export default class Ball {
 		if(newBallAngle > -0.5){newBallAngle = -0.5}
 		this.speed.x = 5*Math.cos(newBallAngle);
 		this.speed.y = 5*Math.sin(newBallAngle);
+		return true;
 	}
 }
