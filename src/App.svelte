@@ -33,7 +33,7 @@
 	// 3 = show scores
 	let score: number = 0;
 	let playerName: string = "";
-	let lifeCount: number = 1;
+	let lifeCount: number = 3;
 	let balls: Ball[] = [];
 	let bricks: Brick[] = [];
 	let powerups: Powerup[] = [];
@@ -95,7 +95,7 @@
 	};
 	let gameStart = () => {
 		gameState = 1;
-		lifeCount = 1;
+		lifeCount = 3;
 		score = 0;
 		loadLevel(0);
 		gameRespawn();
