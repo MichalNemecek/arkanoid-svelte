@@ -18,12 +18,22 @@
 	import collision_sfx_hi from "./assets/collision_sfx_hi.wav";
 	import collision_sfx_lo from "./assets/collision_sfx_lo.wav";
 	import { levels } from "./assets/levels.json";
-
+	interface ScoreEntry {
+		score: number,
+		name: string
+	};
+	let scoreboard: ScoreEntry[] = [];
+	if(localStorage.getItem("scoreboard") != null){
+		scoreboard = JSON.parse(localStorage.getItem("scoreboard"));
+	}
 	let gameState: number = 0;
+	// 0 = intro
+	// 1 = playing
+	// 2 = save score
+	// 3 = show scores
 	let score: number = 0;
-	// 0 = intro;
-	// 1 = playing;
-	let lifeCount: number = 3;
+	let playerName: string = "";
+	let lifeCount: number = 1;
 	let balls: Ball[] = [];
 	let bricks: Brick[] = [];
 	let powerups: Powerup[] = [];
@@ -58,6 +68,7 @@
 		}
 	};
 	let loadLevel = (l: number) => {
+		bricks = [];
 		for (let i of levels[l].layout) {
 			bricks.push(new Brick(new Vec2(i.x, i.y), true));
 		}
@@ -84,11 +95,24 @@
 	};
 	let gameStart = () => {
 		gameState = 1;
-		lifeCount = 3;
+		lifeCount = 1;
 		score = 0;
 		loadLevel(0);
 		gameRespawn();
 	};
+	let saveScore = () => {
+		scoreboard.push({score, name: playerName});
+		scoreboard.sort((a, b) => b.score - a.score);
+		if(scoreboard.length > 5){
+			scoreboard.length = 5;
+		}
+		localStorage.setItem("scoreboard",JSON.stringify(scoreboard));
+		gameState = 0;
+	}
+	let clearScores = () => {
+		scoreboard = [];
+		localStorage.removeItem("scoreboard");
+	}
 
 	let gameLoopFunction = () => {
 		let ballCollidedWithBrick = false;
@@ -207,6 +231,8 @@
 				lifeCount--;
 				if (lifeCount > 0) {
 					setTimeout(gameRespawn, 1000);
+				}else{
+					setTimeout(()=>{gameState=2;},1000);
 				}
 			}
 		}
@@ -218,7 +244,8 @@
 		class="intro"
 		style="width:{Confs.gameWidth}px; height:{Confs.gameHeight}px;"
 	>
-		<div class="button" role="button" on:click={gameStart}>Start game</div>
+	<div class="button" role="button" on:click={gameStart}>Start game</div>
+	<div class="button" role="button" on:click={() => (gameState = 3)}>Leaderboard</div>
 	</div>
 {:else if gameState == 1}
 	<svg width={Confs.gameWidth} height={Confs.gameHeight}>
@@ -254,6 +281,30 @@
 	<div class="statusline" style="width: {Confs.gameWidth}px">
 		Lives: {lifeCount}, Score: {score}
 	</div>
+{:else if gameState == 2}
+	<div
+		class="gameover"
+		style="width:{Confs.gameWidth}px; height:{Confs.gameHeight}px;"
+		>
+		<h1> Game Over!</h1>
+		<h2> Your score: {score}</h2>
+		<input type="text" bind:value={playerName} />
+		<div class="button" role="button" on:click={saveScore}>Save score</div>
+	</div>
+{:else if gameState == 3}
+<div
+		class="scores"
+		style="width:{Confs.gameWidth}px; height:{Confs.gameHeight}px;"
+		>
+		<h1>Leaderboard</h1>
+		<ol>
+			{#each scoreboard as sc}
+				<li>{sc.name} - {sc.score}</li>
+			{/each}
+		</ol>
+		<div class="button" role="button" on:click={clearScores}>Clear scores</div>
+		<div class="button" role="button" on:click={() => (gameState=0)}>Main Menu</div>
+	</div>
 {/if}
 <svelte:window on:keydown={handlePressed} on:keyup={handleReleased} />
 
@@ -269,13 +320,30 @@
 		font-size: 4em;
 		font-family: monospace;
 	}
-	div.intro {
+	ol {
+		width: 30%;
+		align-self: center;
+	}
+	div.intro, div.gameover, div.scores {
 		border: 5px solid black;
 		margin: 0 auto;
 		display: flex;
+		font-family: monospace;
 		flex-direction: column;
 		justify-content: center;
 		align-content: space-evenly;
+		gap: 2em;
+	}
+	h1, h2 {
+		align-self: center;
+	}
+	input {
+		width: 30%;
+		align-self: center;
+		padding: 0.5em;
+		box-sizing: border-box;
+		border-radius: 0.5em;
+		border: 1px solid gray;
 	}
 	.button {
 		width: 30%;
@@ -289,6 +357,7 @@
 		align-self: center;
 		font-size: 1.5em;
 		font-family: monospace;
+		cursor: pointer;
 	}
 	.statusline {
 		margin: 0 auto;
