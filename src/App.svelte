@@ -207,9 +207,9 @@
 		powerups = powerups;
 		bricksLeft = bricks.some((b) => b.active);
 		ballsLeft = balls.length > 0;
-		if (pressedKeys == 0x01) {
+		if (pressedKeys == 0b01) {
 			paddle.move(true);
-		} else if (pressedKeys == 0x10) {
+		} else if (pressedKeys == 0b10) {
 			paddle.move(false);
 		}
 		paddle = paddle;
