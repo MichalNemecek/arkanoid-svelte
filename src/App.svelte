@@ -51,20 +51,20 @@
 	let handlePressed = (e: KeyboardEvent) => {
 		switch (e.key) {
 			case "ArrowLeft":
-				pressedKeys |= 0x10;
+				pressedKeys |= 0b10;
 				break;
 			case "ArrowRight":
-				pressedKeys |= 0x01;
+				pressedKeys |= 0b01;
 				break;
 		}
 	};
 	let handleReleased = (e: KeyboardEvent) => {
 		switch (e.key) {
 			case "ArrowLeft":
-				pressedKeys &= 0x01;
+				pressedKeys &= 0b01;
 				break;
 			case "ArrowRight":
-				pressedKeys &= 0x10;
+				pressedKeys &= 0b10;
 		}
 	};
 	let loadLevel = (l: number) => {
